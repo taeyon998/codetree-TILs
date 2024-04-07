@@ -1,4 +1,13 @@
 # 오답: out of bound -> pos=(1,1)부터 시작하는 거 (0,0)으로 고침
+
+# 내 코드 다시 읽으면서 잡은 실수:
+# 오답: board 정리, 충돌시 처음 충돌하는 놈 자리 0으로 셋팅하는거 까먹음
+# 오답: 산타 충돌, 충돌시 제자리일 경우, board[r][c]=0 취소
+# 오답: direction 8개 중에서 실수
+
+# testcase 보고 print해서 안 실수:
+# 오답: 출력할때 순서 틀림 -> 입력이 n=1 부터 P까지 주는줄 가정했는데, 다르게 줌. 당연하게 생각하지 말자.
+
 class Santa:
     def __init__(self,n,r,c,state,score): # 오답: self 하는법
         self.n=n
@@ -32,11 +41,11 @@ def santaCollision(board, s, d, N, posOrNeg):
 N,M,P,C,D = list(map(int,input().split()))
 Rr, Rc = list(map(int,input().split()))
 Rr, Rc = Rr-1, Rc-1
-slist = []
+slist = [0]*P
 # slist
-for _ in range(1,P+1):
+for _ in range(P):
     i,r,c = tuple(map(int,input().split()))
-    slist.append(Santa(i,r-1,c-1,0,0))
+    slist[i-1]=Santa(i,r-1,c-1,0,0)
 # board
 board=[[0]*N for _ in range(N)]
 for s in slist:
@@ -60,8 +69,8 @@ for _ in range(M):
                 s = nxt
     
     # nRr nRc
-    dirsR = [(-1,0),(-1,1),(0,1),(1,1),(1,0),(1,-1),(0,-1),(1,-1)] # row, col
-    d_R=0
+    dirsR = [(-1,0),(-1,1),(0,1),(1,1),(1,0),(1,-1),(0,-1),(-1,-1)] # row, col
+    d_R=-1
     minD = 10**10
     for i_dr,d in enumerate(dirsR):
         if 0<=Rr+d[0]<N and 0<=Rc+d[1]<N and dist(Rr+d[0],Rc+d[1],s.r,s.c)<minD:
@@ -116,6 +125,8 @@ for _ in range(M):
             board[s_org_r][s_org_c]=0
             if not (0<=s.r<N and 0<=s.c<N): # out of board
                 s.state=2 # dead
+            elif s.r==s_org_r and s.c==s_org_c: # 제자리
+                board[s.r][s.c]=s
             elif board[s.r][s.c]!=0: # collide with other santa
                 santaCollision(board,s,dirsS[d_S],N,-1)
             else: # 다른 산타랑 충돌 안함: move to new spot
