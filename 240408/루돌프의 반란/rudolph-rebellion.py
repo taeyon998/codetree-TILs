@@ -15,8 +15,8 @@ def dist(r1,c1,r2,c2):
 
 # MODIFY: board, s.r, s.c
 def santaCollision(board, s, d, N, posOrNeg):
-    temp = board[s.r][s.c]
-    board[s.r][s.c]=s
+    temp = board[s.r][s.c] # 방 빼
+    board[s.r][s.c]=s # 입주
     nSr, nSc = s.r+d[0]*posOrNeg, s.c+d[1]*posOrNeg
     temp.r = nSr
     temp.c = nSc
@@ -76,15 +76,14 @@ for _ in range(M):
         s.faintCnt=2
         s.score+=C
         s_org_r, s_org_c = s.r, s.c
+        board[s_org_r][s_org_c]=0
         s.r+=dirsR[d_R][0]*C
         s.c+=dirsR[d_R][1]*C
         if not (0<=s.r<N and 0<=s.c<N): # out of board
             s.state=2 # dead
-            board[s_org_r][s_org_c]=0
         elif board[s.r][s.c]!=0: # collide with other santa
             santaCollision(board,s,dirsR[d_R],N,1)
         else: # 다른 산타랑 충돌 안함: move to new spot
-            board[s_org_r][s_org_c]=0
             board[s.r][s.c]=s
     # 충돌 안함
     if not (0<=Rr<N and 0<=Rc<N): # out of board
@@ -114,13 +113,12 @@ for _ in range(M):
             s.score+=D
             s.r-=dirsS[d_S][0]*D
             s.c-=dirsS[d_S][1]*D
+            board[s_org_r][s_org_c]=0
             if not (0<=s.r<N and 0<=s.c<N): # out of board
                 s.state=2 # dead
-                board[s_org_r][s_org_c]=0
             elif board[s.r][s.c]!=0: # collide with other santa
                 santaCollision(board,s,dirsS[d_S],N,-1)
             else: # 다른 산타랑 충돌 안함: move to new spot
-                board[s_org_r][s_org_c]=0
                 board[s.r][s.c]=s
         # 충돌 안함
         else:
@@ -142,12 +140,15 @@ for _ in range(M):
         break
     
     # print(f'Turn {_}')
+    # print(board)
     # print(Rr,Rc)
     # for s in slist:
     #     s.printS()
 
 # print score
 scores = []
+# print(Rr,Rc)
+# print(board)
 for s in slist:
     # s.printS()
     scores.append(s.score)
